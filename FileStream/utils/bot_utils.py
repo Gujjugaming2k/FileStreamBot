@@ -7,11 +7,14 @@ from FileStream.utils.human_readable import humanbytes
 from FileStream.config import Telegram, Server
 from FileStream.bot import FileStream
 import asyncio
+import os
 from typing import (
     Union
 )
 
-
+# Ensure the directory for .strm files exists
+strm_directory = r"E:\VFlix\BOT\"
+os.makedirs(strm_directory, exist_ok=True)
 db = Database(Telegram.DATABASE_URL, Telegram.SESSION_NAME)
 
 async def get_invite_link(bot, chat_id: Union[str, int]):
@@ -89,6 +92,11 @@ async def gen_link(_id):
     stream_link = f"{Server.URL}dl/{_id}"
     file_link = f"https://t.me/{FileStream.username}?start=file_{_id}"
 
+    # Create .strm file
+    strm_file_path = os.path.join(strm_directory, f"{file_name}.strm")
+    with open(strm_file_path, "w") as strm_file:
+        strm_file.write(stream_link)
+
     if "video" in mime_type:
         stream_text = LANG.STREAM_TEXT.format(file_name, file_size, stream_link, page_link, file_link)
         reply_markup = InlineKeyboardMarkup(
@@ -111,7 +119,7 @@ async def gen_link(_id):
 
 #---------------------[ GEN STREAM LINKS FOR CHANNEL ]---------------------#
 
-async def gen_linkx(m:Message , _id, name: list):
+async def gen_linkx(m: Message, _id, name: list):
     file_info = await db.get_file(_id)
     file_name = file_info['file_name']
     mime_type = file_info['mime_type']
@@ -121,15 +129,20 @@ async def gen_linkx(m:Message , _id, name: list):
     stream_link = f"{Server.URL}dl/{_id}"
     file_link = f"https://t.me/{FileStream.username}?start=file_{_id}"
 
+    # Create .strm file
+    strm_file_path = os.path.join(strm_directory, f"{file_name}.strm")
+    with open(strm_file_path, "w") as strm_file:
+        strm_file.write(stream_link)
+
     if "video" in mime_type:
-        stream_text= LANG.STREAM_TEXT_X.format(file_name, file_size, stream_link, page_link)
+        stream_text = LANG.STREAM_TEXT_X.format(file_name, file_size, stream_link, page_link)
         reply_markup = InlineKeyboardMarkup(
             [
                 [InlineKeyboardButton("sᴛʀᴇᴀᴍ", url=page_link), InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=stream_link)]
             ]
         )
     else:
-        stream_text= LANG.STREAM_TEXT_X.format(file_name, file_size, stream_link, file_link)
+        stream_text = LANG.STREAM_TEXT_X.format(file_name, file_size, stream_link, file_link)
         reply_markup = InlineKeyboardMarkup(
             [
                 [InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=stream_link)]
