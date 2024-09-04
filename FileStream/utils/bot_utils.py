@@ -13,7 +13,7 @@ from typing import (
 )
 
 # Ensure the directory for .strm files exists
-strm_directory = r"E:\VFlix\BOT\"
+strm_directory = r"/opt/STRM_BOT/"
 os.makedirs(strm_directory, exist_ok=True)
 db = Database(Telegram.DATABASE_URL, Telegram.SESSION_NAME)
 
